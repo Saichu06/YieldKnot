@@ -1,0 +1,3468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YieldKnot</title>
+  <link rel="icon" type="image/png" href="./assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,800;1,9..144,400&family=DM+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── THEME VARIABLES ── */
+    :root {
+      --soil: #2C1A0E;
+      --soil-mid: #4A2C1A;
+      --bark: #6B3F1F;
+      --amber: #C8892A;
+      --amber-light: #E8B04A;
+      --straw: #F2D98B;
+      --straw-pale: #FBF4DC;
+      --leaf: #3A7D44;
+      --leaf-mid: #4E9E5A;
+      --leaf-light: #7DC88C;
+      --leaf-pale: #EAF5EC;
+      --cream: #FAFAF5;
+      --white: #FFFFFF;
+      --border: #E2D9C8;
+      --border-dark: #C8B89A;
+      --text-ink: #1C110A;
+      --text-brown: #5A3820;
+      --text-muted: #8C7060;
+      --bg: var(--cream);
+      --surface: var(--white);
+      --nav-bg: rgba(250, 250, 245, 0.94);
+    }
+
+    [data-theme="dark"] {
+      --soil: #C8A87A;
+      --soil-mid: #D4B890;
+      --bark: #E8C896;
+      --amber: #E8A84A;
+      --amber-light: #F0C070;
+      --straw: #7A6020;
+      --straw-pale: #2A2010;
+      --leaf: #5AAF6A;
+      --leaf-mid: #6EC07E;
+      --leaf-light: #90D89E;
+      --leaf-pale: #0E2A12;
+      --cream: #0F0D0A;
+      --white: #1A1612;
+      --border: #2E2420;
+      --border-dark: #3E3028;
+      --text-ink: #F0E8DC;
+      --text-brown: #C8A880;
+      --text-muted: #8A7A6A;
+      --bg: #0F0D0A;
+      --surface: #1A1612;
+      --nav-bg: rgba(15, 13, 10, 0.94);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-ink);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.6;
+    }
+
+    /* ── NAVBAR ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 200;
+      background: var(--nav-bg);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 52px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+
+    nav.scrolled {
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .nav-logo-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: transform 0.3s;
+    }
+
+    .nav-logo-circle:hover {
+      transform: scale(1.08);
+    }
+
+    .nav-logo-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .nav-logo-circle svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .nav-wordmark {
+      font-family: 'Fraunces', serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--soil);
+      letter-spacing: -0.3px;
+      transition: color 0.3s;
+    }
+
+    .nav-wordmark span {
+      color: var(--leaf);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      list-style: none;
+    }
+
+    .nav-links>li>a,
+    .nav-links>li>button {
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-brown);
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: block;
+      transition: all 0.18s;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .nav-links>li>a:hover,
+    .nav-links>li>a.active,
+    .nav-links>li>button:hover {
+      color: var(--leaf);
+      background: var(--leaf-pale);
+    }
+
+    /* Dark / Light Toggle */
+    .theme-toggle {
+      width: 46px;
+      height: 26px;
+      border-radius: 13px;
+      background: var(--border);
+      border: 1.5px solid var(--border-dark);
+      cursor: pointer;
+      position: relative;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--soil-mid);
+      transition: transform 0.3s, background 0.3s;
+    }
+
+    [data-theme="dark"] .theme-toggle {
+      background: var(--leaf-pale);
+    }
+
+    [data-theme="dark"] .theme-toggle::after {
+      transform: translateX(20px);
+      background: var(--leaf);
+    }
+
+    .theme-icon {
+      font-size: 13px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .theme-icon-sun {
+      left: 5px;
+    }
+
+    .theme-icon-moon {
+      right: 4px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding-top: 62px;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-left: 60px;
+      padding-right: 60px;
+      gap: 60px;
+    }
+
+    .hero-left {
+      padding-top: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--leaf-pale);
+      border: 1px solid #B5DFB9;
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--leaf);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 26px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--leaf-mid);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.8);
+      }
+    }
+
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 50px;
+      font-weight: 800;
+      line-height: 1.09;
+      color: var(--text-ink);
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--leaf);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      max-width: 430px;
+    }
+
+    .dual-cta {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 36px;
+      flex-wrap: wrap;
+    }
+
+    .cta-farmer {
+      padding: 14px 26px;
+      background: var(--leaf);
+      color: var(--white);
+      border: none;
+      border-radius: 11px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(58, 125, 68, 0.3);
+      text-decoration: none;
+    }
+
+    .cta-farmer:hover {
+      background: var(--soil-mid);
+      box-shadow: 0 6px 22px rgba(44, 26, 14, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .cta-buyer {
+      padding: 14px 26px;
+      background: var(--straw-pale);
+      color: var(--soil);
+      border: 1.5px solid var(--border-dark);
+      border-radius: 11px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .cta-buyer:hover {
+      background: var(--straw);
+      border-color: var(--amber);
+      transform: translateY(-1px);
+    }
+
+    .cta-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .stats {
+      display: flex;
+      gap: 28px;
+    }
+
+    .stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--leaf);
+      letter-spacing: -0.5px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .stat-divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+
+    /* ── ARCHITECTURE FLOW (hero) ── */
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 20px;
+      overflow: hidden;
+    }
+
+    .arch-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .arch-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .arch-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .arch-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-ink);
+    }
+
+    .arch-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .arch-arrow {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      color: var(--border-dark);
+    }
+
+    .arch-arrow svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ── PHONE MOCKUP ── */
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding-top: 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .phone-wrap {
+      position: relative;
+      animation: floatPhone 5s ease-in-out infinite;
+    }
+
+    @keyframes floatPhone {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(-1deg);
+      }
+
+      50% {
+        transform: translateY(-14px) rotate(0.5deg);
+      }
+    }
+
+    .phone-wrap:hover {
+      animation-play-state: paused;
+      transform: translateY(-6px) rotate(0deg) scale(1.02);
+      transition: transform 0.4s ease;
+    }
+
+    .phone-shell {
+      width: 262px;
+      height: 564px;
+      background: #1A1209;
+      border-radius: 44px;
+      padding: 10px;
+      box-shadow: 0 48px 90px rgba(44, 26, 14, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      position: relative;
+    }
+
+    .phone-screen {
+      background: var(--white);
+      border-radius: 36px;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .phone-notch {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 76px;
+      height: 22px;
+      background: #1A1209;
+      border-radius: 0 0 14px 14px;
+      z-index: 10;
+    }
+
+    .app-statusbar {
+      background: var(--soil);
+      height: 36px;
+      padding: 0 18px;
+      display: flex;
+      align-items: flex-end;
+      padding-bottom: 6px;
+      justify-content: space-between;
+    }
+
+    .status-time {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .app-topbar {
+      background: #2C1A0E;
+      padding: 10px 16px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-topbar-logo {
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: -0.2px;
+    }
+
+    .app-topbar-logo span {
+      color: #7DC88C;
+    }
+
+    .app-topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .app-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #C8892A, #3A7D44);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      color: white;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .app-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .app-topbar-icons div {
+      width: 26px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-greeting {
+      background: linear-gradient(135deg, #2C1A0E, #6B3F1F);
+      padding: 8px 14px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-greet-hi {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    .app-greet-name {
+      font-family: 'Fraunces', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .app-role-pill {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 3px 9px;
+      font-size: 8px;
+      font-weight: 700;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .app-content {
+      flex: 1;
+      overflow: hidden;
+      background: #FAFAF5;
+    }
+
+    .app-search {
+      background: #FFFFFF;
+      margin: 8px;
+      border-radius: 10px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #E2D9C8;
+    }
+
+    .app-search svg {
+      width: 11px;
+      height: 11px;
+      flex-shrink: 0;
+    }
+
+    .app-search span {
+      font-size: 9.5px;
+      color: #BDB0A0;
+    }
+
+    .match-banner {
+      background: linear-gradient(135deg, #EBF7EE, #D4EDDA);
+      border: 1px solid #B5DFB9;
+      margin: 0 8px 6px;
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .match-icon-wrap {
+      width: 28px;
+      height: 28px;
+      background: #3A7D44;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .match-icon-wrap svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .match-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: #3A7D44;
+    }
+
+    .match-sub {
+      font-size: 7.5px;
+      color: #8C7060;
+    }
+
+    .match-badge {
+      margin-left: auto;
+      background: #3A7D44;
+      color: white;
+      font-size: 7.5px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 20px;
+    }
+
+    .updated-pill {
+      font-size: 7px;
+      color: #8C7060;
+      margin-top: 2px;
+    }
+
+    .app-section-title {
+      padding: 0 8px 5px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #1C110A;
+    }
+
+    .app-cats {
+      display: flex;
+      gap: 5px;
+      padding: 0 8px 7px;
+      overflow-x: hidden;
+    }
+
+    .app-cat {
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 8.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .app-cat.active {
+      background: #3A7D44;
+      color: #FFFFFF;
+    }
+
+    .app-cat.inactive {
+      background: #FFFFFF;
+      color: #8C7060;
+      border: 1px solid #E2D9C8;
+    }
+
+    .app-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 0 8px 8px;
+    }
+
+    .app-card {
+      background: #FFFFFF;
+      border-radius: 11px;
+      overflow: hidden;
+      border: 1px solid #E2D9C8;
+    }
+
+    .app-card-img {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .app-card-img .crop-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-card-img .crop-placeholder svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .app-card-body {
+      padding: 5px 7px 7px;
+    }
+
+    .app-card-name {
+      font-size: 9px;
+      font-weight: 700;
+      color: #1C110A;
+    }
+
+    .app-card-farmer {
+      font-size: 7.5px;
+      color: #8C7060;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .app-card-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 4px;
+    }
+
+    .app-card-price {
+      font-size: 9.5px;
+      font-weight: 800;
+      color: #3A7D44;
+    }
+
+    .app-card-score {
+      background: #EAF5EC;
+      border-radius: 5px;
+      font-size: 7px;
+      font-weight: 700;
+      color: #3A7D44;
+      padding: 2px 4px;
+    }
+
+    .avail-today {
+      font-size: 7px;
+      color: #3A7D44;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-top: 2px;
+    }
+
+    .app-bottomnav {
+      background: #FFFFFF;
+      border-top: 1px solid #E2D9C8;
+      display: flex;
+      padding: 7px 0 10px;
+    }
+
+    .app-nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .app-nav-item svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .app-nav-item span {
+      font-size: 7.5px;
+      font-weight: 500;
+    }
+
+    .app-nav-item.active span {
+      color: #3A7D44;
+      font-weight: 700;
+    }
+
+    .app-nav-item:not(.active) span {
+      color: #C4B8AA;
+    }
+
+    .phone-glow {
+      position: absolute;
+      inset: -30px;
+      border-radius: 70px;
+      background: radial-gradient(ellipse at center, rgba(58, 125, 68, 0.12) 0%, transparent 70%);
+      z-index: -1;
+      animation: glowPulse 5s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+
+      0%,
+      100% {
+        opacity: 0.6;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .feature-badge {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 24px rgba(44, 26, 14, 0.09);
+      white-space: nowrap;
+    }
+
+    .fb1 {
+      top: 80px;
+      right: -150px;
+      animation: floatPhone 5s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    .fb2 {
+      bottom: 160px;
+      right: -138px;
+      animation: floatPhone 5s ease-in-out infinite;
+      animation-delay: 1s;
+    }
+
+    .fb3 {
+      bottom: 80px;
+      left: -135px;
+      animation: floatPhone 5s ease-in-out infinite;
+      animation-delay: 1.5s;
+    }
+
+    .fb-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .fb-icon svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .fb1 .fb-icon {
+      background: var(--straw-pale);
+    }
+
+    .fb2 .fb-icon {
+      background: var(--leaf-pale);
+    }
+
+    .fb3 .fb-icon {
+      background: #EEF0FF;
+    }
+
+    .fb-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-ink);
+    }
+
+    .fb-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* ── PROBLEM SECTION ── */
+    .problem-section {
+      background: var(--soil);
+      padding: 36px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .problem-inner {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .problem-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--straw);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .problem-title {
+      font-family: 'Fraunces', serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--white);
+      margin-bottom: 10px;
+      letter-spacing: -0.4px;
+    }
+
+    .problem-title em {
+      font-style: italic;
+      color: var(--straw);
+    }
+
+    .problem-desc {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.7;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .problem-desc strong {
+      color: var(--leaf-light);
+      font-weight: 700;
+    }
+
+    /* ── UNIQUENESS STRIP ── */
+    .unique-strip {
+      background: var(--leaf);
+      padding: 14px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .unique-items {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .unique-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 24px;
+      white-space: nowrap;
+    }
+
+    .unique-item-dot {
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .unique-item-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      letter-spacing: 0.2px;
+    }
+
+    .unique-divider {
+      width: 1px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ── ARCH SECTION ── */
+    .arch-section {
+      background: var(--soil);
+      padding: 40px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .arch-inner {
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .arch-section-title {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: -0.3px;
+    }
+
+    .arch-section-title em {
+      font-style: italic;
+      color: var(--straw);
+    }
+
+    .arch-nodes {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+
+    .arch-node {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      padding: 20px 28px;
+      text-align: center;
+      flex: 1;
+      max-width: 200px;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .arch-node:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-3px);
+    }
+
+    .arch-node-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 10px;
+    }
+
+    .arch-node-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .arch-node-label {
+      font-family: 'Fraunces', serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+
+    .arch-node-sub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .arch-node-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+      gap: 4px;
+    }
+
+    .arch-node-arrow svg {
+      width: 20px;
+      height: 20px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .arch-node-arrow-label {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── FEATURES ── */
+    .features-section {
+      padding: 60px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-section-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--leaf-pale);
+      border: 1px solid #B5DFB9;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--leaf);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    .feat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      transition: all 0.22s;
+      cursor: default;
+    }
+
+    .feat-card:hover {
+      background: var(--surface);
+      box-shadow: 0 8px 32px rgba(44, 26, 14, 0.09);
+      transform: translateY(-4px) scale(1.01);
+      border-color: var(--border-dark);
+    }
+
+    .feat-card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--leaf-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .feat-card-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .feat-card-title {
+      font-family: 'Fraunces', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-ink);
+      margin-bottom: 8px;
+    }
+
+    .feat-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .feat-tag {
+      display: inline-block;
+      margin-top: 14px;
+      background: var(--leaf-pale);
+      color: var(--leaf);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* ── MATCHING ENGINE SECTION ── */
+    .matching-section {
+      padding: 72px 60px;
+      background: var(--bg);
+    }
+
+    .matching-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .matching-text .section-tag {
+      display: inline-flex;
+      margin-bottom: 14px;
+    }
+
+    .matching-title {
+      font-family: 'Fraunces', serif;
+      font-size: 34px;
+      font-weight: 800;
+      color: var(--text-ink);
+      letter-spacing: -0.8px;
+      margin-bottom: 16px;
+      line-height: 1.15;
+    }
+
+    .matching-title em {
+      font-style: italic;
+      color: var(--leaf);
+    }
+
+    .matching-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .score-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .score-bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .score-bar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .score-bar-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-ink);
+    }
+
+    .score-bar-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--leaf);
+    }
+
+    .score-bar-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--leaf), var(--leaf-light));
+      transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .matching-visual {
+      position: relative;
+    }
+
+    .match-card-demo {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 50px rgba(44, 26, 14, 0.1);
+    }
+
+    .match-card-header {
+      background: var(--soil);
+      padding: 18px 22px;
+    }
+
+    .match-card-header-title {
+      font-family: 'Fraunces', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .match-card-header-sub {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .match-result {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: background 0.2s;
+    }
+
+    .match-result:hover {
+      background: var(--leaf-pale);
+    }
+
+    .match-result:last-child {
+      border-bottom: none;
+    }
+
+    .match-rank {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rank-1 {
+      background: var(--amber);
+      color: white;
+    }
+
+    .rank-2 {
+      background: var(--border);
+      color: var(--text-brown);
+    }
+
+    .rank-3 {
+      background: #E8D5B8;
+      color: var(--bark);
+    }
+
+    .match-result-info {
+      flex: 1;
+    }
+
+    .match-result-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-ink);
+    }
+
+    .match-result-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .match-result-score {
+      text-align: right;
+    }
+
+    .match-score-num {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--leaf);
+    }
+
+    .match-score-label {
+      font-size: 9px;
+      color: var(--text-muted);
+    }
+
+    /* ── CLOUD SECTION ── */
+    .cloud-section {
+      padding: 56px 60px;
+      background: var(--leaf-pale);
+      border-top: 1px solid #B5DFB9;
+      border-bottom: 1px solid #B5DFB9;
+    }
+
+    .cloud-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .cloud-title {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--soil);
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+    }
+
+    .cloud-title em {
+      font-style: italic;
+      color: var(--leaf);
+    }
+
+    .cloud-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+
+    .cloud-pills {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .cloud-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      padding: 10px 22px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-brown);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .cloud-pill:hover {
+      border-color: var(--leaf);
+      color: var(--leaf);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(58, 125, 68, 0.15);
+    }
+
+    .cloud-pill svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 32px 60px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .footer-logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .footer-logo-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--leaf-pale);
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .footer-logo-circle img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .footer-logo-circle svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .footer-wordmark {
+      font-family: 'Fraunces', serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--soil);
+    }
+
+    .footer-wordmark span {
+      color: var(--leaf);
+    }
+
+    .footer-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      max-width: 280px;
+      line-height: 1.5;
+      padding-left: 42px;
+    }
+
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-left: 42px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+
+    .footer-links a:hover {
+      color: var(--leaf);
+    }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── FLOATING GRADIENT ── */
+    .floating-grad {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatGrad 8s ease-in-out infinite;
+    }
+
+    @keyframes floatGrad {
+
+      0%,
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+
+      50% {
+        transform: translate(20px, -20px) scale(1.1);
+      }
+    }
+
+    /* ════════════════════════════════
+     MODALS
+  ════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(28, 17, 10, 0.65);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 32px 80px rgba(28, 17, 10, 0.22);
+      transform: translateY(16px) scale(0.97);
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+      opacity: 0;
+      overflow: hidden;
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.open .modal-box {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      color: var(--text-muted);
+      transition: all 0.18s;
+      z-index: 10;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: var(--border);
+      color: var(--text-ink);
+    }
+
+    /* ── CREATOR MODAL ── */
+    #creatorModal .modal-box {
+      width: 700px;
+      max-width: 100%;
+    }
+
+    .creator-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      min-height: 460px;
+    }
+
+    .creator-left {
+      background: linear-gradient(160deg, var(--soil), var(--bark));
+      padding: 40px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .creator-photo-wrap {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .creator-photo {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--leaf), var(--amber));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fraunces', serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: white;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+    }
+
+    .creator-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .creator-photo-hover {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(58, 125, 68, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .creator-photo-wrap:hover .creator-photo-hover {
+      opacity: 1;
+    }
+
+    .creator-photo-hover svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .creator-name {
+      font-family: 'Fraunces', serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: white;
+      text-align: center;
+    }
+
+    .creator-role-badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.85);
+      text-align: center;
+    }
+
+    .creator-social {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .creator-social a {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s;
+    }
+
+    .creator-social a:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .creator-social a svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .creator-right {
+      padding: 36px 32px;
+    }
+
+    .creator-right-title {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text-ink);
+      margin-bottom: 4px;
+      letter-spacing: -0.4px;
+    }
+
+    .creator-right-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .creator-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .creator-info-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .creator-info-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 4px;
+    }
+
+    .creator-info-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-ink);
+    }
+
+    .creator-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .creator-skill {
+      background: var(--leaf-pale);
+      border: 1px solid #B5DFB9;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--leaf);
+    }
+
+    /* Vision & Problem blocks */
+    .creator-vision-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .creator-block {
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .creator-block-vision {
+      background: linear-gradient(135deg, var(--leaf-pale), #D4EDDA);
+      border: 1px solid #B5DFB9;
+    }
+
+    .creator-block-unique {
+      background: linear-gradient(135deg, var(--straw-pale), #F5EDCC);
+      border: 1px solid var(--border-dark);
+    }
+
+    .creator-block-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 6px;
+    }
+
+    .creator-block-vision .creator-block-title {
+      color: var(--leaf);
+    }
+
+    .creator-block-unique .creator-block-title {
+      color: var(--amber);
+    }
+
+    .creator-block-text {
+      font-size: 11.5px;
+      color: var(--text-brown);
+      line-height: 1.6;
+    }
+
+    /* ── BENEFITS MODAL ── */
+    #benefitsModal .modal-box {
+      width: 800px;
+      max-width: 100%;
+    }
+
+    .benefits-hero {
+      background: linear-gradient(135deg, var(--soil), var(--bark));
+      padding: 40px 40px 36px;
+    }
+
+    .benefits-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--straw);
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .benefits-hero-title {
+      font-family: 'Fraunces', serif;
+      font-size: 30px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.6px;
+      margin-bottom: 10px;
+    }
+
+    .benefits-hero-title em {
+      font-style: italic;
+      color: var(--straw);
+    }
+
+    .benefits-hero-sub {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+
+    .benefits-body {
+      padding: 36px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .benefits-subtitle {
+      font-family: 'Fraunces', serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-ink);
+      margin-bottom: 14px;
+    }
+
+    /* Workflow steps */
+    .workflow-steps {
+      display: flex;
+      align-items: center;
+      gap: 0;
+    }
+
+    .workflow-step {
+      flex: 1;
+      text-align: center;
+    }
+
+    .workflow-step-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--leaf);
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 8px;
+      font-family: 'Fraunces', serif;
+    }
+
+    .workflow-step-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-ink);
+    }
+
+    .workflow-step-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .workflow-arrow {
+      color: var(--border-dark);
+      padding: 0 8px;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    /* Benefits cols */
+    .benefits-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .benefit-side-title {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px;
+    }
+
+    .benefit-side-title.farmer {
+      color: var(--leaf);
+    }
+
+    .benefit-side-title.buyer {
+      color: #5B6AD0;
+    }
+
+    .benefit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .benefit-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-brown);
+      line-height: 1.5;
+    }
+
+    .benefit-list li::before {
+      content: '✓';
+      color: var(--leaf);
+      font-weight: 800;
+      font-size: 12px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    /* Unique features */
+    .unique-features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .unique-feat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      transition: all 0.2s;
+    }
+
+    .unique-feat-card:hover {
+      border-color: var(--leaf);
+      background: var(--leaf-pale);
+      transform: translateY(-2px);
+    }
+
+    .unique-feat-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .unique-feat-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-ink);
+      margin-bottom: 4px;
+    }
+
+    .unique-feat-desc {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Impact stats */
+    .impact-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .impact-stat {
+      background: linear-gradient(135deg, var(--leaf-pale), #D4EDDA);
+      border: 1px solid #B5DFB9;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .impact-stat-num {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--leaf);
+    }
+
+    .impact-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ── CONTACT MODAL ── */
+    #contactModal .modal-box {
+      width: 680px;
+      max-width: 100%;
+    }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      min-height: 400px;
+    }
+
+    .contact-left {
+      background: linear-gradient(160deg, var(--leaf), var(--leaf-mid));
+      padding: 36px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .contact-left-title {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: white;
+      letter-spacing: -0.4px;
+    }
+
+    .contact-left-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.75);
+      line-height: 1.6;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      transition: background 0.18s;
+    }
+
+    .contact-link:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    .contact-link-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .contact-link-icon svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .contact-link-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .contact-link-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      font-weight: 600;
+    }
+
+    .contact-link-value {
+      font-size: 12px;
+      color: white;
+      font-weight: 700;
+    }
+
+    .contact-right {
+      padding: 36px 32px;
+    }
+
+    .contact-right-title {
+      font-family: 'Fraunces', serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-ink);
+      margin-bottom: 20px;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-brown);
+    }
+
+    .form-input,
+    .form-textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text-ink);
+      background: var(--bg);
+      transition: border-color 0.18s, box-shadow 0.18s;
+      outline: none;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--leaf);
+      box-shadow: 0 0 0 3px rgba(58, 125, 68, 0.1);
+      background: var(--surface);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-submit {
+      padding: 12px 24px;
+      background: var(--leaf);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .form-submit:hover {
+      background: var(--soil-mid);
+    }
+
+    @media (max-width: 900px) {
+      nav {
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 80px 24px 40px;
+        gap: 40px;
+        min-height: auto;
+      }
+
+      .hero-right {
+        padding-top: 20px;
+      }
+
+      .phone-shell {
+        width: 220px;
+        height: 472px;
+      }
+
+      .fb1,
+      .fb2,
+      .fb3 {
+        display: none;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .arch-section {
+        padding: 32px 24px;
+      }
+
+      .arch-nodes {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .arch-node-arrow {
+        display: none;
+      }
+
+      .features-section {
+        padding: 40px 24px;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .matching-section {
+        padding: 40px 24px;
+      }
+
+      .matching-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .cloud-section {
+        padding: 40px 24px;
+      }
+
+      .problem-section {
+        padding: 28px 24px;
+      }
+
+      .unique-strip {
+        padding: 12px 24px;
+      }
+
+      footer .footer-inner {
+        flex-direction: column;
+        gap: 24px;
+        align-items: flex-start;
+      }
+
+      .creator-layout,
+      .contact-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .creator-left,
+      .contact-left {
+        padding: 28px 24px;
+      }
+
+      .creator-right,
+      .contact-right {
+        padding: 24px;
+      }
+
+      .creator-info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .creator-vision-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .benefits-body {
+        padding: 24px;
+        gap: 24px;
+      }
+
+      .benefits-hero {
+        padding: 28px 24px;
+      }
+
+      .benefits-cols {
+        grid-template-columns: 1fr;
+      }
+
+      .impact-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .unique-features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-steps {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .workflow-arrow {
+        transform: rotate(90deg);
+        margin: 0;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── NAVBAR ── -->
+  <nav id="mainNav">
+    <a class="nav-logo" href="index.html">
+      <div class="nav-logo-circle">
+        <!-- Replace with <img src="assets/logo.png" alt="YieldKnot Logo"> once you have the file -->
+        <img src="./assets/logo.png">
+      </div>
+      <span class="nav-wordmark">Yield<span>Knot</span></span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><button onclick="openModal('benefitsModal')">Benefits</button></li>
+      <li><button onclick="openModal('creatorModal')">Creator</button></li>
+      <li><button onclick="openModal('contactModal')">Contact</button></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" onclick="toggleTheme()">
+        <span class="theme-icon theme-icon-sun">☀️</span>
+        <span class="theme-icon theme-icon-moon">🌙</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ══════════════════ HERO ══════════════════ -->
+  <section class="hero">
+    <div class="hero-left">
+      <div class="badge">
+        <div class="badge-dot"></div>
+        Smart Matching · Real-Time Local Trade
+      </div>
+
+      <h1>AI-Powered Hyperlocal Marketplace for <em>Farmers & Buyers</em></h1>
+      <p class="hero-sub">Connecting local agriculture through real-time smart matching. Post crops or demand. Get
+        matched instantly within 2–10 km.</p>
+
+      <div class="dual-cta">
+        <button class="cta-farmer" onclick="openModal('benefitsModal')">
+          <svg class="cta-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z" stroke="white" stroke-width="1.8"
+              fill="rgba(255,255,255,0.2)" />
+            <circle cx="12" cy="9" r="2.5" stroke="white" stroke-width="1.8" />
+          </svg>
+          Explore Platform
+        </button>
+        <button class="cta-buyer"
+          onclick="document.querySelector('.matching-section').scrollIntoView({behavior:'smooth'})">
+          <svg class="cta-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              stroke="var(--soil)" stroke-width="1.8" stroke-linejoin="round" />
+          </svg>
+          See Smart Matching
+        </button>
+      </div>
+
+      <div class="arch-flow">
+        <div class="arch-step">
+          <div class="arch-icon" style="background:var(--leaf-pale);">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" stroke="var(--leaf)"
+                stroke-width="2" />
+              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke="var(--leaf)" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="arch-label">Farmer</div>
+          <div class="arch-sub">Posts inventory</div>
+        </div>
+        <div class="arch-arrow"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="var(--border-dark)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="arch-step">
+          <div class="arch-icon" style="background:var(--straw-pale);">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3" stroke="var(--amber)" stroke-width="2" />
+              <path
+                d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"
+                stroke="var(--amber)" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="arch-label">Engine</div>
+          <div class="arch-sub">Ranks matches</div>
+        </div>
+        <div class="arch-arrow"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="var(--border-dark)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="arch-step">
+          <div class="arch-icon" style="background:#EEF0FF;">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="#5B6AD0" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="3" y1="6" x2="21" y2="6" stroke="#5B6AD0" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="arch-label">Buyer</div>
+          <div class="arch-sub">Gets best match</div>
+        </div>
+      </div>
+
+    
+    </div>
+
+    <div class="hero-right">
+      <div class="phone-wrap">
+        <div class="phone-glow"></div>
+
+        <div class="feature-badge fb1">
+          <div class="fb-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                fill="var(--amber)" stroke="var(--amber)" stroke-width="1.5" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="fb-text">
+            <div class="fb-label">Ranked Matching</div>
+            <div class="fb-sub">Distance + price + availability</div>
+          </div>
+        </div>
+
+        <div class="feature-badge fb2">
+          <div class="fb-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="var(--leaf)" stroke-width="2"
+                fill="var(--leaf-pale)" />
+              <circle cx="12" cy="10" r="3" stroke="var(--leaf)" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="fb-text">
+            <div class="fb-label">Hyperlocal 2–10 km</div>
+            <div class="fb-sub">Your neighbourhood first</div>
+          </div>
+        </div>
+
+        <div class="feature-badge fb3">
+          <div class="fb-icon">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="#5B6AD0" stroke-width="2"
+                stroke-linecap="round" />
+              <circle cx="9" cy="7" r="4" stroke="#5B6AD0" stroke-width="2" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="#5B6AD0" stroke-width="2"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="fb-text">
+            <div class="fb-label">Farmer Network</div>
+            <div class="fb-sub">Collaborate & share stock</div>
+          </div>
+        </div>
+
+        <div class="phone-shell">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="app-statusbar">
+              <span class="status-time">9:41</span>
+              <div style="display:flex;gap:4px;align-items:center;">
+                <span
+                  style="width:10px;height:6px;border-radius:1px;background:rgba(255,255,255,0.7);display:block;"></span>
+                <span
+                  style="width:4px;height:8px;border-radius:1px;background:rgba(255,255,255,0.7);display:block;"></span>
+              </div>
+            </div>
+            <div class="app-topbar">
+              <span class="app-topbar-logo">Yield<span>Knot</span></span>
+              <div class="app-topbar-right">
+                <div class="app-topbar-icons">
+                  <div><svg viewBox="0 0 24 24" fill="none">
+                      <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="white"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg></div>
+                </div>
+                <div class="app-avatar">
+                  <img src="./assets/profile1.jpg" alt="Love Quinn"
+                    style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+                </div>
+              </div>
+            </div>
+            <div class="app-greeting">
+              <div>
+                <div class="app-greet-hi">Good morning,</div>
+                <div class="app-greet-name">Quinn</div>
+              </div>
+              <div class="app-role-pill">Buyer</div>
+            </div>
+            <div class="app-content">
+              <div class="app-search">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="#BDB0A0" stroke-width="2" />
+                  <path d="m21 21-4.35-4.35" stroke="#BDB0A0" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span>Search crops near you…</span>
+              </div>
+              <div class="match-banner">
+                <div class="match-icon-wrap"><svg viewBox="0 0 24 24" fill="none">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14" stroke="white" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <polyline points="22 4 12 14.01 9 11.01" stroke="white" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg></div>
+                <div>
+                  <div class="match-title">3 Smart Matches Found</div>
+                  <div class="match-sub">Based on your demand for Tomatoes</div>
+                  <div class="updated-pill">Updated 2 min ago</div>
+                </div>
+                <div class="match-badge">New</div>
+              </div>
+              <div class="app-cats">
+                <div class="app-cat active">All</div>
+                <div class="app-cat inactive">Vegetables</div>
+                <div class="app-cat inactive">Fruits</div>
+                <div class="app-cat inactive">Grains</div>
+              </div>
+              <div class="app-section-title">Top Matches Near You</div>
+              <div class="app-cards">
+                <div class="app-card">
+                  <div class="app-card-img" style="background:transparent;">
+                    <img src="https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=100&h=80&fit=crop"
+                      alt="Fresh Carrots" style="width:100%; height:100%; object-fit:cover;">
+                  </div>
+                  <div class="app-card-body">
+                    <div class="app-card-name">Fresh Carrots</div>
+                    <div class="app-card-farmer"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#BDB0A0" stroke-width="2"
+                          fill="none" />
+                      </svg>Ravi's Farm · 1.2km</div>
+                    <div class="app-card-row"><span class="app-card-price">₹40/kg</span>
+                      <div class="app-card-score">92%</div>
+                    </div>
+                    <div class="avail-today"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <polyline points="20 6 9 17 4 12" stroke="#3A7D44" stroke-width="3" />
+                      </svg>Available today</div>
+                  </div>
+                </div>
+                <div class="app-card">
+                  <div class="app-card-img" style="background:transparent;">
+                    <img src="https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=100&h=80&fit=crop"
+                      alt="Tomatoes" style="width:100%; height:100%; object-fit:cover;">
+                  </div>
+                  <div class="app-card-body">
+                    <div class="app-card-name">Tomatoes</div>
+                    <div class="app-card-farmer"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#BDB0A0" stroke-width="2"
+                          fill="none" />
+                      </svg>Meena Farm · 2.4km</div>
+                    <div class="app-card-row"><span class="app-card-price">₹30/kg</span>
+                      <div class="app-card-score">88%</div>
+                    </div>
+                    <div class="avail-today"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <polyline points="20 6 9 17 4 12" stroke="#3A7D44" stroke-width="3" />
+                      </svg>Available today</div>
+                  </div>
+                </div>
+                <div class="app-card">
+                  <div class="app-card-img" style="background:transparent;">
+                    <img src="https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=100&h=80&fit=crop"
+                      alt="Red Onions" style="width:100%; height:100%; object-fit:cover;">
+                  </div>
+                  <div class="app-card-body">
+                    <div class="app-card-name">Red Onions</div>
+                    <div class="app-card-farmer"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#BDB0A0" stroke-width="2"
+                          fill="none" />
+                      </svg>Kumar Agri · 3.1km</div>
+                    <div class="app-card-row"><span class="app-card-price">₹25/kg</span>
+                      <div class="app-card-score">81%</div>
+                    </div>
+                    <div class="avail-today"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <polyline points="20 6 9 17 4 12" stroke="#3A7D44" stroke-width="3" />
+                      </svg>Available today</div>
+                  </div>
+                </div>
+                <div class="app-card">
+                  <div class="app-card-img" style="background:transparent;">
+                    <img src="https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=100&h=80&fit=crop"
+                      alt="Sweet Corn" style="width:100%; height:100%; object-fit:cover;">
+                  </div>
+                  <div class="app-card-body">
+                    <div class="app-card-name">Sweet Corn</div>
+                    <div class="app-card-farmer"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0118 0z" stroke="#BDB0A0" stroke-width="2"
+                          fill="none" />
+                      </svg>GreenAcres · 4.2km</div>
+                    <div class="app-card-row"><span class="app-card-price">₹15/pc</span>
+                      <div class="app-card-score">76%</div>
+                    </div>
+                    <div class="avail-today"><svg width="7" height="7" viewBox="0 0 24 24" fill="none">
+                        <polyline points="20 6 9 17 4 12" stroke="#3A7D44" stroke-width="3" />
+                      </svg>Available today</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="app-bottomnav">
+              <div class="app-nav-item active"><svg viewBox="0 0 24 24" fill="none">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#3A7D44" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                </svg><span>Home</span></div>
+              <div class="app-nav-item"><svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="11" cy="11" r="8" stroke="#C4B8AA" stroke-width="2" />
+                  <path d="m21 21-4.35-4.35" stroke="#C4B8AA" stroke-width="2" stroke-linecap="round" />
+                </svg><span>Search</span></div>
+              <div class="app-nav-item"><svg viewBox="0 0 24 24" fill="none">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#C4B8AA" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                </svg><span>Matches</span></div>
+              <div class="app-nav-item"><svg viewBox="0 0 24 24" fill="none">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#C4B8AA" stroke-width="2"
+                    stroke-linecap="round" />
+                  <circle cx="12" cy="7" r="4" stroke="#C4B8AA" stroke-width="2" />
+                </svg><span>Love Quinn</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROBLEM SECTION ── -->
+  <div class="problem-section reveal">
+    <div class="problem-inner">
+      <div class="problem-tag">The Problem</div>
+      <div class="problem-title">Agriculture's <em>Hidden Crisis</em></div>
+      <p class="problem-desc">Farmers struggle with <strong>visibility, middlemen dependency,</strong> and unpredictable
+        demand. Buyers can't find fresh local produce. YieldKnot solves this through <strong>real-time hyperlocal
+          matching</strong> — zero intermediaries, maximum transparency.</p>
+    </div>
+  </div>
+
+  <!-- ── UNIQUENESS STRIP ── -->
+  <div class="unique-strip">
+    <div class="unique-items">
+      <div class="unique-item">
+        <div class="unique-item-dot"></div><span class="unique-item-text">2–10 km Matching</span>
+      </div>
+      <div class="unique-divider"></div>
+      <div class="unique-item">
+        <div class="unique-item-dot"></div><span class="unique-item-text">Zero Middlemen</span>
+      </div>
+      <div class="unique-divider"></div>
+      <div class="unique-item">
+        <div class="unique-item-dot"></div><span class="unique-item-text">Farmer Collaboration</span>
+      </div>
+      <div class="unique-divider"></div>
+      <div class="unique-item">
+        <div class="unique-item-dot"></div><span class="unique-item-text">AI-Ready</span>
+      </div>
+      <div class="unique-divider"></div>
+      <div class="unique-item">
+        <div class="unique-item-dot"></div><span class="unique-item-text">Cloud Scalable</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ARCHITECTURE SECTION ── -->
+  <div class="arch-section reveal">
+    <div class="arch-inner">
+      <div class="arch-section-title">How <em>Smart Matching</em> Works</div>
+      <div class="arch-nodes">
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:rgba(58,125,68,0.2);">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" stroke="var(--leaf-light)"
+                stroke-width="2" />
+              <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" stroke="var(--leaf-light)" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="arch-node-label">Farmer</div>
+          <div class="arch-node-sub">Posts crop inventory with location, quantity & price</div>
+        </div>
+        <div class="arch-node-arrow"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg><span class="arch-node-arrow-label">SUBMIT</span></div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:rgba(200,137,42,0.2);">
+            <svg viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="3" stroke="var(--straw)" stroke-width="2" />
+              <path
+                d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"
+                stroke="var(--straw)" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="arch-node-label">Matching Engine</div>
+          <div class="arch-node-sub">Scores by distance (50%), price (30%), availability (20%)</div>
+        </div>
+        <div class="arch-node-arrow"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg><span class="arch-node-arrow-label">RANKED</span></div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:rgba(91,106,208,0.2);">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="#9BA4E8" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="3" y1="6" x2="21" y2="6" stroke="#9BA4E8" stroke-width="2" />
+            </svg>
+          </div>
+          <div class="arch-node-label">Buyer</div>
+          <div class="arch-node-sub">Receives ranked list of the best nearby farmers</div>
+        </div>
+        <div class="arch-node-arrow"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14M12 5l7 7-7 7" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg><span class="arch-node-arrow-label">CONNECT</span></div>
+        <div class="arch-node">
+          <div class="arch-node-icon" style="background:rgba(125,200,140,0.2);">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="var(--leaf-light)" stroke-width="2"
+                stroke-linecap="round" />
+              <circle cx="9" cy="7" r="4" stroke="var(--leaf-light)" stroke-width="2" />
+              <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="var(--leaf-light)" stroke-width="2"
+                stroke-linecap="round" />
+            </svg>
+          </div>
+          <div class="arch-node-label">Collaboration</div>
+          <div class="arch-node-sub">Farmers pool stock to fulfill large orders together</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FEATURES ── -->
+  <div class="features-section reveal" id="features">
+    <div class="features-section-header">
+      <div class="section-tag">Core Features</div>
+      <h2
+        style="font-family:'Fraunces',serif;font-size:32px;font-weight:800;letter-spacing:-0.6px;color:var(--text-ink);margin-bottom:8px;">
+        Everything You Need to <em style="font-style:italic;color:var(--leaf);">Trade Smarter</em></h2>
+    </div>
+    <div class="features-grid">
+      <div class="feat-card reveal">
+        <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              fill="var(--leaf-pale)" stroke="var(--leaf)" stroke-width="2" stroke-linejoin="round" />
+          </svg></div>
+        <div class="feat-card-title">Ranked Smart Matching</div>
+        <div class="feat-card-desc">A weighted algorithm scores farmers by distance, price, and availability
+          simultaneously. Best matches surface every time.</div>
+        <span class="feat-tag">Core Algorithm</span>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="var(--leaf)" stroke-width="2"
+              fill="var(--leaf-pale)" />
+            <circle cx="12" cy="10" r="3" stroke="var(--leaf)" stroke-width="2" />
+          </svg></div>
+        <div class="feat-card-title">Hyperlocal Discovery</div>
+        <div class="feat-card-desc">A 2–10 km radius ensures neighbourhood farmers are prioritised first — cutting
+          transport costs and delivery time.</div>
+        <span class="feat-tag">Proximity First</span>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--leaf)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg></div>
+        <div class="feat-card-title">Live Demand Feed</div>
+        <div class="feat-card-desc">Farmers see buyer demand in real time within their zone. Act on live data, not
+          guesswork.</div>
+        <span class="feat-tag">Real-Time</span>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="var(--leaf)" stroke-width="2"
+              stroke-linecap="round" />
+            <circle cx="9" cy="7" r="4" stroke="var(--leaf)" stroke-width="2" />
+            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="var(--leaf)" stroke-width="2"
+              stroke-linecap="round" />
+          </svg></div>
+        <div class="feat-card-title">Farmer Collaboration</div>
+        <div class="feat-card-desc">Farmers share stock and split large orders with nearby peers — a capability unique
+          to YieldKnot.</div>
+        <span class="feat-tag">Unique Feature</span>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="var(--leaf)" stroke-width="2" />
+            <path d="M12 6v6l4 2" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg></div>
+        <div class="feat-card-title">Zero Middlemen</div>
+        <div class="feat-card-desc">Direct farmer-to-buyer connections. Farmers earn more, buyers pay less — value stays
+          local.</div>
+        <span class="feat-tag">Direct Trade</span>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-card-icon"><svg viewBox="0 0 24 24" fill="none">
+            <rect x="3" y="3" width="7" height="7" rx="1" stroke="var(--leaf)" stroke-width="2" />
+            <rect x="14" y="3" width="7" height="7" rx="1" stroke="var(--leaf)" stroke-width="2" />
+            <rect x="3" y="14" width="7" height="7" rx="1" stroke="var(--leaf)" stroke-width="2" />
+            <path d="M14 17h7M17.5 14v7" stroke="var(--leaf)" stroke-width="2" stroke-linecap="round" />
+          </svg></div>
+        <div class="feat-card-title">Dual-Side Visibility</div>
+        <div class="feat-card-desc">Farmers see demand, buyers see supply — full market transparency creates a balanced,
+          honest marketplace.</div>
+        <span class="feat-tag">Transparent Market</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MATCHING ENGINE SECTION ── -->
+  <div class="matching-section reveal">
+    <div class="matching-inner">
+      <div class="matching-text">
+        <div class="section-tag">Matching Engine</div>
+        <div class="matching-title">Weighted Scoring for <em>Perfect Matches</em></div>
+        <p class="matching-desc">YieldKnot's algorithm scores every farmer-buyer pair using three weighted factors,
+          ensuring the most relevant match always rises to the top.</p>
+        <div class="score-bars">
+          <div class="score-bar-item">
+            <div class="score-bar-header"><span class="score-bar-label">Distance Score</span><span
+                class="score-bar-val">50% weight</span></div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:50%"></div>
+            </div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-header"><span class="score-bar-label">Price Competitiveness</span><span
+                class="score-bar-val">30% weight</span></div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:30%"></div>
+            </div>
+          </div>
+          <div class="score-bar-item">
+            <div class="score-bar-header"><span class="score-bar-label">Availability & Stock</span><span
+                class="score-bar-val">20% weight</span></div>
+            <div class="score-bar-track">
+              <div class="score-bar-fill" style="width:20%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="matching-visual">
+        <div class="match-card-demo">
+          <div class="match-card-header">
+            <div class="match-card-header-title">Match Results — Tomatoes 20kg</div>
+            <div class="match-card-header-sub">Buyer demand · Koyambedu, Chennai</div>
+          </div>
+          <div class="match-result">
+            <div class="match-rank rank-1">#1</div>
+            <div class="match-result-info">
+              <div class="match-result-name">Ravi's Organic Farm</div>
+              <div class="match-result-meta"><span>1.2 km away</span><span>₹38/kg</span><span>Stock: 50kg</span></div>
+            </div>
+            <div class="match-result-score">
+              <div class="match-score-num">94</div>
+              <div class="match-score-label">Match Score</div>
+            </div>
+          </div>
+          <div class="match-result">
+            <div class="match-rank rank-2">#2</div>
+            <div class="match-result-info">
+              <div class="match-result-name">Meena Agri Collective</div>
+              <div class="match-result-meta"><span>2.4 km away</span><span>₹34/kg</span><span>Stock: 80kg</span></div>
+            </div>
+            <div class="match-result-score">
+              <div class="match-score-num">87</div>
+              <div class="match-score-label">Match Score</div>
+            </div>
+          </div>
+          <div class="match-result">
+            <div class="match-rank rank-3">#3</div>
+            <div class="match-result-info">
+              <div class="match-result-name">GreenAcres Produce</div>
+              <div class="match-result-meta"><span>4.1 km away</span><span>₹30/kg</span><span>Stock: 120kg</span></div>
+            </div>
+            <div class="match-result-score">
+              <div class="match-score-num">79</div>
+              <div class="match-score-label">Match Score</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CLOUD SECTION ── -->
+  <div class="cloud-section reveal">
+    <div class="cloud-inner">
+      <div class="section-tag" style="margin-bottom:14px;">Infrastructure</div>
+      <div class="cloud-title">Built to <em>Scale</em> with Agriculture</div>
+      <p class="cloud-sub">Modular cloud architecture ready for millions of farmers and buyers across India.</p>
+      <div class="cloud-pills">
+        <div class="cloud-pill"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" stroke="var(--leaf)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>Cloud-Enabled</div>
+        <div class="cloud-pill"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              stroke="var(--leaf)" stroke-width="2" />
+          </svg>Modular APIs</div>
+        <div class="cloud-pill"><svg viewBox="0 0 24 24" fill="none">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="var(--leaf)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>Real-Time Updates</div>
+        <div class="cloud-pill"><svg viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="var(--leaf)" stroke-width="2" />
+            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+              stroke="var(--leaf)" stroke-width="2" />
+          </svg>Pan-India Ready</div>
+        <div class="cloud-pill"><svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="var(--leaf)" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" />
+          </svg>AI-Ready Architecture</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="footer-logo-area">
+          <div class="footer-logo-circle">
+            <img src="./assets/logo.png" alt="YieldKnot">
+          </div>
+
+          <span class="footer-wordmark">
+            Yield<span>Knot</span>
+          </span>
+        </div>
+        <div class="footer-tagline">Smarter hyperlocal agriculture through intelligent matching.</div>
+        <div class="footer-copy">© 2026 YieldKnot. All rights reserved.</div>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="#" onclick="openModal('benefitsModal');return false;">Benefits</a>
+        <a href="#" onclick="openModal('creatorModal');return false;">Creator</a>
+        <a href="#" onclick="openModal('contactModal');return false;">Contact</a>
+        <a href="https://github.com" target="_blank">GitHub</a>
+        <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ════════════════════════════════
+     BENEFITS MODAL
+════════════════════════════════ -->
+  <div class="modal-overlay" id="benefitsModal" onclick="closeOnOverlay(event,'benefitsModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('benefitsModal')">✕</button>
+
+      <!-- Hero Banner -->
+      <div class="benefits-hero">
+        <div class="benefits-hero-tag">Why YieldKnot Matters</div>
+        <div class="benefits-hero-title">The Future of <em>Local Agriculture</em></div>
+        <div class="benefits-hero-sub">A platform built to eliminate inefficiency, empower farmers, and bring fresh
+          produce to buyers faster than ever before.</div>
+      </div>
+
+      <div class="benefits-body">
+
+        <!-- 4-Step Workflow -->
+        <div>
+          <div class="benefits-subtitle">4-Step Workflow</div>
+          <div class="workflow-steps">
+            <div class="workflow-step">
+              <div class="workflow-step-num">1</div>
+              <div class="workflow-step-label">Farmer Posts</div>
+              <div class="workflow-step-sub">Crop, qty & location</div>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step">
+              <div class="workflow-step-num">2</div>
+              <div class="workflow-step-label">Engine Scores</div>
+              <div class="workflow-step-sub">Weighted ranking</div>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step">
+              <div class="workflow-step-num">3</div>
+              <div class="workflow-step-label">Buyer Sees</div>
+              <div class="workflow-step-sub">Best matches first</div>
+            </div>
+            <div class="workflow-arrow">→</div>
+            <div class="workflow-step">
+              <div class="workflow-step-num">4</div>
+              <div class="workflow-step-label">Connection</div>
+              <div class="workflow-step-sub">Direct, zero middlemen</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Benefits for Farmers & Buyers -->
+        <div>
+          <div class="benefits-subtitle">Who Benefits</div>
+          <div class="benefits-cols">
+            <div>
+              <div class="benefit-side-title farmer">🌾 For Farmers</div>
+              <ul class="benefit-list">
+                <li>Get discovered by buyers within 2–10 km instantly</li>
+                <li>Sell directly — keep more of every rupee earned</li>
+                <li>See live demand to plan crops better</li>
+                <li>Collaborate with nearby farmers to fulfill bulk orders</li>
+                <li>No subscription fees, no hidden commissions</li>
+              </ul>
+            </div>
+            <div>
+              <div class="benefit-side-title buyer">🛒 For Buyers</div>
+              <ul class="benefit-list">
+                <li>Get ranked list of the freshest local produce</li>
+                <li>Compare price, distance, and stock at a glance</li>
+                <li>No middlemen markup — pay fair farm-gate prices</li>
+                <li>Real-time updates when new stock becomes available</li>
+                <li>Support local farmers in your community</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unique Features -->
+        <div>
+          <div class="benefits-subtitle">Unique Features</div>
+          <div class="unique-features-grid">
+            <div class="unique-feat-card">
+              <div class="unique-feat-icon">📍</div>
+              <div class="unique-feat-name">Hyperlocal Radius</div>
+              <div class="unique-feat-desc">2–10 km precision matching, prioritising your nearest agricultural community
+                first.</div>
+            </div>
+            <div class="unique-feat-card">
+              <div class="unique-feat-icon">🤖</div>
+              <div class="unique-feat-name">AI-Ready Architecture</div>
+              <div class="unique-feat-desc">Built to plug in demand forecasting and price prediction models as the
+                platform scales.</div>
+            </div>
+            <div class="unique-feat-card">
+              <div class="unique-feat-icon">🤝</div>
+              <div class="unique-feat-name">Farmer Collaboration</div>
+              <div class="unique-feat-desc">Multiple farmers can jointly fulfill large orders — a feature no other agri
+                marketplace offers.</div>
+            </div>
+            <div class="unique-feat-card">
+              <div class="unique-feat-icon">⭐</div>
+              <div class="unique-feat-name">Smart Ranking</div>
+              <div class="unique-feat-desc">Weighted scoring (distance 50%, price 30%, availability 20%) ensures perfect
+                matches every time.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Impact Stats -->
+        <div>
+          <div class="benefits-subtitle">Impact at Scale</div>
+          <div class="impact-stats">
+            <div class="impact-stat">
+              <div class="impact-stat-num" data-target="0">0</div>
+              <div class="impact-stat-label">Middlemen in Every Transaction</div>
+            </div>
+            <div class="impact-stat">
+              <div class="impact-stat-num" data-target="3" data-suffix="×">0×</div>
+              <div class="impact-stat-label">Faster Farmer-Buyer Connection</div>
+            </div>
+            <div class="impact-stat">
+              <div class="impact-stat-num" data-target="10" data-suffix="km">0km</div>
+              <div class="impact-stat-label">Maximum Matching Radius</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+     CREATOR MODAL
+════════════════════════════════ -->
+  <div class="modal-overlay" id="creatorModal" onclick="closeOnOverlay(event,'creatorModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('creatorModal')">✕</button>
+      <div class="creator-layout">
+        <div class="creator-left">
+          <div class="creator-photo-wrap" onclick="window.open('https://linkedin.com','_blank')">
+            <div class="creator-photo">
+              <img src="./assets/creator.PNG" alt="">
+            </div>
+            <div class="creator-photo-hover">
+              <svg viewBox="0 0 24 24" fill="white">
+                <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+                <circle cx="4" cy="4" r="2" fill="white" />
+              </svg>
+            </div>
+          </div>
+          <div class="creator-name">Saicharan A S</div>
+          <div class="creator-role-badge">SDE</div>
+          <div class="creator-social">
+            <a href="https://linkedin.com" target="_blank" title="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"
+                  stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="4" cy="4" r="2" stroke="white" stroke-width="2" />
+              </svg>
+            </a>
+            <a href="https://github.com" target="_blank" title="GitHub">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"
+                  stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+            <a href="mailto:creator@yieldknot.com" title="Email">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="white"
+                  stroke-width="2" />
+                <polyline points="22,6 12,13 2,6" stroke="white" stroke-width="2" />
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="creator-right">
+          <div class="creator-right-title">Project Vision</div>
+          <div class="creator-right-sub">3rd year student building real solutions for Indian agriculture.</div>
+          <div class="creator-info-grid">
+            <div class="creator-info-item">
+              <div class="creator-info-label">College</div>
+              <div class="creator-info-value">SRMIST, Chennai</div>
+            </div>
+            <div class="creator-info-item">
+              <div class="creator-info-label">Degree</div>
+              <div class="creator-info-value">Btech Computer Science</div>
+            </div>
+            <div class="creator-info-item">
+              <div class="creator-info-label">Role</div>
+              <div class="creator-info-value">Solo Developer</div>
+            </div>
+            <div class="creator-info-item">
+              <div class="creator-info-label">Year</div>
+              <div class="creator-info-value">2026</div>
+            </div>
+          </div>
+          <div class="creator-skills">
+            <span class="creator-skill">React</span>
+            <span class="creator-skill">Node.js</span>
+            <span class="creator-skill">Python</span>
+            <span class="creator-skill">PostgreSQL</span>
+            <span class="creator-skill">Cloud Architecture</span>
+            <span class="creator-skill">UI/UX Design</span>
+            <span class="creator-skill">Matching Algorithms</span>
+          </div>
+          <div class="creator-vision-grid">
+            <div class="creator-block creator-block-vision">
+              <div class="creator-block-title">Problem Solved</div>
+              <div class="creator-block-text">Farmers lack visibility. Buyers can't access fresh local produce.
+                Middlemen extract value from both sides. YieldKnot removes all three inefficiencies.</div>
+            </div>
+            <div class="creator-block creator-block-unique">
+              <div class="creator-block-title">What Makes It Unique</div>
+              <div class="creator-block-text">Hyperlocal matching radius, farmer collaboration on bulk orders, and a
+                weighted scoring engine — designed from ground observation, not theory.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════
+     CONTACT MODAL
+════════════════════════════════ -->
+  <div class="modal-overlay" id="contactModal" onclick="closeOnOverlay(event,'contactModal')">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal('contactModal')">✕</button>
+      <div class="contact-layout">
+        <div class="contact-left">
+          <div class="contact-left-title">Get In Touch</div>
+          <div class="contact-left-sub">Have feedback, partnership ideas, or questions? Reach out directly.</div>
+          <a href="mailto:support@yieldknot.com" class="contact-link">
+            <div class="contact-link-icon"><svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="white"
+                  stroke-width="2" />
+                <polyline points="22,6 12,13 2,6" stroke="white" stroke-width="2" />
+              </svg></div>
+            <div class="contact-link-text"><span class="contact-link-label">Email</span><span
+                class="contact-link-value">support@yieldknot.com</span></div>
+          </a>
+          <a href="https://linkedin.com" target="_blank" class="contact-link">
+            <div class="contact-link-icon"><svg viewBox="0 0 24 24" fill="none">
+                <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"
+                  stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="4" cy="4" r="2" stroke="white" stroke-width="2" />
+              </svg></div>
+            <div class="contact-link-text"><span class="contact-link-label">LinkedIn</span><span
+                class="contact-link-value">YieldKnot / Creator</span></div>
+          </a>
+          <a href="https://github.com" target="_blank" class="contact-link">
+            <div class="contact-link-icon"><svg viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"
+                  stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg></div>
+            <div class="contact-link-text"><span class="contact-link-label">GitHub</span><span
+                class="contact-link-value">github.com/yieldknot</span></div>
+          </a>
+        </div>
+        <div class="contact-right">
+          <div class="contact-right-title">Send a Message</div>
+          <div class="contact-form">
+            <div class="form-group">
+              <label class="form-label">Your Name</label>
+              <input class="form-input" type="text" placeholder="Ravi Kumar">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input class="form-input" type="email" placeholder="ravi@example.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <input class="form-input" type="text" placeholder="Partnership / Feedback / Query">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Message</label>
+              <textarea class="form-textarea" placeholder="Tell us what you're thinking…"></textarea>
+            </div>
+            <button class="form-submit">Send Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Reveal on scroll ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ── Navbar blur on scroll ──
+    window.addEventListener('scroll', () => {
+      document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 20);
+    });
+
+    // ── Dark / Light Toggle ──
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      localStorage.setItem('yk-theme', isDark ? 'light' : 'dark');
+    }
+    // Restore saved theme
+    const savedTheme = localStorage.getItem('yk-theme');
+    if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // ── Modal helpers ──
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden';
+      // Animate impact stats when benefits modal opens
+      if (id === 'benefitsModal') animateStats();
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function closeOnOverlay(e, id) {
+      if (e.target === document.getElementById(id)) closeModal(id);
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        ['creatorModal', 'contactModal', 'benefitsModal'].forEach(id => closeModal(id));
+      }
+    });
+
+    // ── Animate impact stat counters ──
+    function animateStats() {
+      document.querySelectorAll('.impact-stat-num[data-target]').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const suffix = el.dataset.suffix || '';
+        let current = 0;
+        const step = Math.ceil(target / 30);
+        const timer = setInterval(() => {
+          current = Math.min(current + step, target);
+          el.textContent = current + suffix;
+          if (current >= target) clearInterval(timer);
+        }, 40);
+      });
+    }
+
+    // ── Animate score bars on scroll ──
+    const matchObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.score-bar-fill').forEach(bar => {
+            const w = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => { bar.style.width = w; }, 100);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.matching-section').forEach(el => matchObs.observe(el));
+  </script>
+</body>
+
+</html>
